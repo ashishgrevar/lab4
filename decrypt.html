@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QR Decryption</title>
+</head>
+<body>
+    <h2>Enter Keyword to Decrypt</h2>
+    <form onsubmit="decrypt(event)">
+        <input type="text" id="keyword" name="key" placeholder="Enter keyword">
+        <input type="submit" value="Decrypt">
+    </form>
+    <p id="result"></p>
+
+    <script>
+        // Extract ciphertext from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const ciphertext = urlParams.get('data');
+
+        function columnarDecrypt(ciphertext, keyword) {
+            keyword = keyword.toUpperCase();
+            let cols = keyword.length;
+            let rows = Math.floor(ciphertext.length / cols);
+            let order = [...keyword].map((c, i) => [c.charCodeAt(0), i])
+                .sort((a, b) => a[0] - b[0])
+                .map(x => x[1]);
+            let matrix = Array(rows).fill('');
+            let idx = 0;
+            for (let col of order.map((_, i) => order.indexOf(i))) {
+                for (let r = 0; r < rows; r++) {
+                    matrix[r] += ciphertext[idx];
+                    idx++;
+                }
+            }
+            return matrix.join('').replace(/X+$/, '');
+        }
+
+        function decrypt(event) {
+            event.preventDefault();
+            let keyword = document.getElementById('keyword').value;
+            let decrypted = columnarDecrypt(ciphertext, keyword);
+            document.getElementById('result').innerText = decrypted ? `Decrypted: ${decrypted}` : 'Invalid keyword or error';
+        }
+    </script>
+</body>
+</html>

@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>QR Decryption</title>
+    <title>QR Decryption Tool</title>
 </head>
 <body>
-    <h2>Enter Keyword to Decrypt</h2>
+    <h2>Enter Keyword to Decrypt the Message</h2>
     <form onsubmit="decrypt(event)">
-        <input type="text" id="keyword" name="key" placeholder="Enter keyword">
+        <input type="text" id="keyword" name="key" placeholder="Enter keyword" required>
         <input type="submit" value="Decrypt">
     </form>
     <p id="result"></p>
@@ -16,6 +16,10 @@
         // Extract ciphertext from URL query parameter
         const urlParams = new URLSearchParams(window.location.search);
         const ciphertext = urlParams.get('data');
+        if (!ciphertext) {
+            document.getElementById('result').innerText = 'No ciphertext found in URL. Please scan a valid QR.';
+            document.querySelector('form').style.display = 'none';
+        }
 
         function columnarDecrypt(ciphertext, keyword) {
             keyword = keyword.toUpperCase();
@@ -28,7 +32,7 @@
             let idx = 0;
             for (let col of order.map((_, i) => order.indexOf(i))) {
                 for (let r = 0; r < rows; r++) {
-                    matrix[r] += ciphertext[idx];
+                    matrix[r] += ciphertext.charAt(idx);
                     idx++;
                 }
             }
@@ -38,8 +42,12 @@
         function decrypt(event) {
             event.preventDefault();
             let keyword = document.getElementById('keyword').value;
+            if (!keyword) {
+                document.getElementById('result').innerText = 'Please enter a keyword.';
+                return;
+            }
             let decrypted = columnarDecrypt(ciphertext, keyword);
-            document.getElementById('result').innerText = decrypted ? `Decrypted: ${decrypted}` : 'Invalid keyword or error';
+            document.getElementById('result').innerText = `Decrypted Message: ${decrypted}`;
         }
     </script>
 </body>

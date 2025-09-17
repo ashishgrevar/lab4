@@ -16,11 +16,6 @@
         // Extract ciphertext from URL query parameter
         const urlParams = new URLSearchParams(window.location.search);
         const ciphertext = urlParams.get('data');
-        if (!ciphertext) {
-            document.getElementById('result').innerText = 'No ciphertext found in URL. Please scan a valid QR.';
-            document.querySelector('form').style.display = 'none';
-        }
-
         function columnarDecrypt(ciphertext, keyword) {
             keyword = keyword.toUpperCase();
             let cols = keyword.length;
